@@ -1,0 +1,26 @@
+{
+  "name": "tp-08---pg-provincias",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "http-status-codes": "^2.3.0",
+    "nodemon": "^3.1.14",
+    "pg": "^8.21.0"
+  },
+  "devDependencies": {
+    "install": "^0.13.0",
+    "npm": "^11.19.1",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1"
+  }
+}

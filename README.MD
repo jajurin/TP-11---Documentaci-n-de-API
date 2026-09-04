@@ -1,0 +1,34 @@
+COMO INICIAR EL PROYECTO CORRECTAMENTE!
+
+PRIMERO INSTALAR DEPENDENCIAS
+
+LUEGO ABRIR BASE DE DATOS, TENER PRENDIDO POSTGRESS, ACTIVAR POSTGRESS.
+
+EN LA SQL QUERY EJECUTAR LA QUUERY, PRIMERO EL CREATE LUEGO LO DEMAS. PEGAR LOS DATOS CON INSERT Y NO COPY.
+
+LUEGO HACER NODE INDEX.JS
+
+Y TODO LISTO USAR POSTMAN CON http://localhost:3000, Y SI QUIERES HACER POST/PUT EN BODY HACER RAW Y ESPECIFICAR JSON SINO TIRA ERROR
+
+EJEMPLO CORRECTO DE INSERT/POST:
+{
+  "name": "Buenos Aires",
+  "full_name": "Provincia de Buenos Aires",
+  "latitude": -34.6132,
+  "longitude": -58.3772,
+  "display_order": 1
+}
+Y PORFAVOR PONER EN JSON.
+
+.env(borrado por buenas practicas pero al ser un tp escolar lo ponemos aca la configuracion para ya tenerlo):
+DB_USER=postgres
+DB_HOST=localhost
+DB_NAME=postgres
+DB_PASSWORD=root
+DB_PORT=5432
+
+
+LOG_FILE_PATH=./modules/logs/
+LOG_FILE_NAME=errores.log
+LOG_TO_FILE_ENABLED=true
+LOG_TO_CONSOLE_ENABLED=true
