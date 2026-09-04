@@ -27,6 +27,78 @@ router.get('/', async (req, res) => {
 });
 
 
+// GET /api/province/search?name=...
+router.get('/search', async (req, res) => {
+    /*
+        #swagger.tags = ['Provincias']
+        #swagger.summary = 'Busca provincias por nombre'
+
+        #swagger.parameters['name'] = {
+            in: 'query',
+            description: 'Texto a buscar dentro del nombre de la provincia',
+            required: true,
+            type: 'string'
+        }
+
+        #swagger.responses[200] = {
+            description: 'Provincias que coinciden con la búsqueda',
+            schema: {
+                type: 'array',
+                items: {
+                    $ref: '#/definitions/Provincia'
+                }
+            }
+        }
+
+        #swagger.responses[400] = {
+            description: 'Falta el parámetro name'
+        }
+    */
+
+    const { name } = req.query;
+
+    if (!name) {
+        return res.status(400).send('El parámetro "name" es requerido.');
+    }
+
+    const provinces = await svc.searchByNameAsync(name);
+
+    return res.status(200).json(provinces);
+});
+
+
+// GET /api/province/order?sort=asc|desc
+router.get('/order', async (req, res) => {
+    /*
+        #swagger.tags = ['Provincias']
+        #swagger.summary = 'Obtiene todas las provincias ordenadas por display_order'
+
+        #swagger.parameters['sort'] = {
+            in: 'query',
+            description: 'Dirección del ordenamiento (asc o desc). Por defecto asc.',
+            required: false,
+            type: 'string'
+        }
+
+        #swagger.responses[200] = {
+            description: 'Provincias ordenadas',
+            schema: {
+                type: 'array',
+                items: {
+                    $ref: '#/definitions/Provincia'
+                }
+            }
+        }
+    */
+
+    const { sort } = req.query;
+
+    const provinces = await svc.getAllOrderedAsync(sort);
+
+    return res.status(200).json(provinces);
+});
+
+
 // GET /api/province/:id
 router.get('/:id', async (req, res) => {
     /*

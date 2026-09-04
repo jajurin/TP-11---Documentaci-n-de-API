@@ -101,6 +101,85 @@
         }
       }
     },
+    "/api/province/search": {
+      "get": {
+        "tags": [
+          "Provincias"
+        ],
+        "summary": "Busca provincias por nombre",
+        "description": "",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Texto a buscar dentro del nombre de la provincia",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Provincias que coinciden con la búsqueda",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "$ref": "#/definitions/Provincia"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Falta el parámetro name"
+          }
+        }
+      }
+    },
+    "/api/province/order": {
+      "get": {
+        "tags": [
+          "Provincias"
+        ],
+        "summary": "Obtiene todas las provincias ordenadas por display_order",
+        "description": "",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Dirección del ordenamiento (asc o desc). Por defecto asc.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Provincias ordenadas",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "$ref": "#/definitions/Provincia"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/province/{id}": {
       "get": {
         "tags": [

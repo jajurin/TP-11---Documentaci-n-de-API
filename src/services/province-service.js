@@ -15,6 +15,14 @@ export default class ProvinceService {
         return await this.repo.getByIdAsync(id);
     };
 
+    searchByNameAsync = async (name) => {
+        return await this.repo.searchByNameAsync(name);
+    };
+
+    getAllOrderedAsync = async (sort) => {
+        return await this.repo.getAllOrderedAsync(sort);
+    };
+
     createAsync = async (body) => {
         validarProvincia(body);
         return await this.repo.createAsync(body);

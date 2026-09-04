@@ -10,6 +10,24 @@ export default class ProvinceRepository {
         return provinces.find(p => p.id === Number(id)) || null;
     };
 
+    searchByNameAsync = async (name) => {
+        return provinces.filter(p =>
+            p.name.toLowerCase().includes(name.toLowerCase())
+        );
+    };
+
+    getAllOrderedAsync = async (sort = 'asc') => {
+        const copy = [...provinces];
+
+        copy.sort((a, b) =>
+            sort === 'desc'
+                ? b.display_order - a.display_order
+                : a.display_order - b.display_order
+        );
+
+        return copy;
+    };
+
     createAsync = async (entity) => {
         const newId = provinces.length > 0
             ? Math.max(...provinces.map(p => p.id)) + 1
