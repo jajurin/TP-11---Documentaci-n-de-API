@@ -10,24 +10,73 @@ const doc = {
     host: 'localhost:3000',
     schemes: ['http'],
 
-    definitions: {
-        Provincia: {
-            id: 1,
-            name: 'Buenos Aires',
-            full_name: 'Provincia de Buenos Aires',
-            latitude: '-36.6769',
-            longitude: '-60.5588',
-            display_order: 1
+  "definitions": {
+    "Provincia": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1,
+          "description": "Identificador único de la provincia, generado automáticamente por el sistema."
         },
-
-        ProvinciaInput: {
-            name: 'Buenos Aires',
-            full_name: 'Provincia de Buenos Aires',
-            latitude: '-36.6769',
-            longitude: '-60.5588',
-            display_order: 1
+        "name": {
+          "type": "string",
+          "example": "Buenos Aires",
+          "description": "Nombre corto o de uso común de la provincia."
+        },
+        "full_name": {
+          "type": "string",
+          "example": "Provincia de Buenos Aires",
+          "description": "Nombre oficial completo de la provincia."
+        },
+        "latitude": {
+          "type": "string",
+          "example": "-36.6769",
+          "description": "Latitud geográfica del centro de la provincia. Se almacena como texto para conservar el formato numérico exacto (incluye signo y decimales)."
+        },
+        "longitude": {
+          "type": "string",
+          "example": "-60.5588",
+          "description": "Longitud geográfica del centro de la provincia. Se almacena como texto por el mismo motivo que la latitud."
+        },
+        "display_order": {
+          "type": "number",
+          "example": 1,
+          "description": "Orden numérico utilizado para mostrar las provincias en listados (por ejemplo, de norte a sur). Es opcional."
         }
+      }
+    },
+    "ProvinciaInput": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Buenos Aires",
+          "description": "Nombre corto o de uso común de la provincia."
+        },
+        "full_name": {
+          "type": "string",
+          "example": "Provincia de Buenos Aires",
+          "description": "Nombre oficial completo de la provincia."
+        },
+        "latitude": {
+          "type": "string",
+          "example": "-36.6769",
+          "description": "Latitud geográfica del centro de la provincia (numérica, en formato texto)."
+        },
+        "longitude": {
+          "type": "string",
+          "example": "-60.5588",
+          "description": "Longitud geográfica del centro de la provincia (numérica, en formato texto)."
+        },
+        "display_order": {
+          "type": "number",
+          "example": 1,
+          "description": "Orden numérico opcional utilizado para mostrar las provincias en listados."
+        }
+      }
     }
+  }
 };
 
 const outputFile = './swagger_output.json';

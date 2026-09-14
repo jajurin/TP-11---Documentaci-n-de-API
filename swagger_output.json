@@ -17,7 +17,7 @@
           "Provincias"
         ],
         "summary": "Obtiene todas las provincias",
-        "description": "",
+        "description": "Devuelve el listado completo de provincias argentinas cargadas en el sistema, sin aplicar filtros ni un orden particular.",
         "responses": {
           "200": {
             "description": "Lista de todas las provincias",
@@ -36,6 +36,21 @@
                 "name": "main"
               }
             }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "Error interno del servidor."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       },
@@ -44,7 +59,7 @@
           "Provincias"
         ],
         "summary": "Crea una nueva provincia",
-        "description": "",
+        "description": "Crea una nueva provincia a partir de los datos recibidos en el body. El ID se genera automáticamente. Antes de crearla se validan los campos obligatorios: name (mínimo 3 caracteres), full_name (mínimo 5 caracteres), latitude y longitude (numéricos) y display_order (entero, opcional).",
         "parameters": [
           {
             "name": "body",
@@ -64,7 +79,34 @@
             }
           },
           "400": {
-            "description": "Datos inválidos"
+            "description": "Datos inválidos. Puede deberse a: nombre obligatorio o con menos de 3 caracteres, nombre completo obligatorio o con menos de 5 caracteres, latitud/longitud obligatorias y numéricas, o display_order que no sea un número entero.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "El nombre es obligatorio!!!"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "Error interno del servidor."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       },
@@ -73,7 +115,7 @@
           "Provincias"
         ],
         "summary": "Actualiza una provincia",
-        "description": "",
+        "description": "Actualiza los datos de una provincia existente. El ID enviado en el body debe corresponder a una provincia ya cargada; de lo contrario devuelve 404. Se aplican las mismas validaciones de campos que en la creación.",
         "parameters": [
           {
             "name": "body",
@@ -93,10 +135,49 @@
             }
           },
           "400": {
-            "description": "Datos inválidos"
+            "description": "Datos inválidos. Puede deberse a: ID faltante, nombre obligatorio o con menos de 3 caracteres, nombre completo obligatorio o con menos de 5 caracteres, latitud/longitud obligatorias y numéricas, o display_order que no sea un número entero.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "La latitud debe ser un número"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Provincia no encontrada"
+            "description": "Provincia no encontrada",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "Provincia no encontrada."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "Error interno del servidor."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -107,7 +188,7 @@
           "Provincias"
         ],
         "summary": "Busca provincias por nombre",
-        "description": "",
+        "description": "Filtra el listado de provincias devolviendo únicamente aquellas cuyo nombre contenga el texto recibido por query string (búsqueda parcial, sin distinguir mayúsculas/minúsculas).",
         "parameters": [
           {
             "name": "name",
@@ -137,7 +218,49 @@
             }
           },
           "400": {
-            "description": "Falta el parámetro name"
+            "description": "Falta el parámetro name",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "El parámetro \"name\" es requerido."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "No se encontraron provincias que coincidan con el nombre buscado",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "No se encontraron provincias con ese nombre."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "Error interno del servidor."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -148,7 +271,7 @@
           "Provincias"
         ],
         "summary": "Obtiene todas las provincias ordenadas por display_order",
-        "description": "",
+        "description": "Devuelve el listado completo de provincias ordenado según el campo display_order. Si no se especifica el parámetro sort, se ordena de forma ascendente por defecto. Los únicos valores válidos para sort son \"asc\" y \"desc\".",
         "parameters": [
           {
             "name": "sort",
@@ -176,6 +299,36 @@
                 "name": "main"
               }
             }
+          },
+          "400": {
+            "description": "El parámetro sort tiene un valor inválido (solo se acepta \"asc\" o \"desc\")",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "El parámetro \"sort\" debe ser \"asc\" o \"desc\"."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "Error interno del servidor."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -186,7 +339,7 @@
           "Provincias"
         ],
         "summary": "Obtiene una provincia por ID",
-        "description": "",
+        "description": "Busca y devuelve una única provincia a partir de su ID numérico. Si no existe una provincia con ese ID, devuelve un error 404.",
         "parameters": [
           {
             "name": "id",
@@ -203,8 +356,50 @@
               "$ref": "#/definitions/Provincia"
             }
           },
+          "400": {
+            "description": "El ID enviado no es un número válido",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "El ID debe ser un número."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
           "404": {
-            "description": "Provincia no encontrada"
+            "description": "Provincia no encontrada",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "Provincia no encontrada."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "Error interno del servidor."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       },
@@ -213,7 +408,7 @@
           "Provincias"
         ],
         "summary": "Elimina una provincia por ID",
-        "description": "",
+        "description": "Elimina definitivamente una provincia a partir de su ID numérico. Si no existe una provincia con ese ID, devuelve un error 404.",
         "parameters": [
           {
             "name": "id",
@@ -230,8 +425,50 @@
               "$ref": "#/definitions/Provincia"
             }
           },
+          "400": {
+            "description": "El ID enviado no es un número válido",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "El ID debe ser un número."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
           "404": {
-            "description": "Provincia no encontrada"
+            "description": "Provincia no encontrada",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "Provincia no encontrada."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "example": {
+                  "type": "string",
+                  "example": "Error interno del servidor."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -241,54 +478,215 @@
     "Provincia": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "number",
-          "example": 1
-        },
-        "name": {
+        "type": {
           "type": "string",
-          "example": "Buenos Aires"
+          "example": "object"
         },
-        "full_name": {
-          "type": "string",
-          "example": "Provincia de Buenos Aires"
-        },
-        "latitude": {
-          "type": "string",
-          "example": "-36.6769"
-        },
-        "longitude": {
-          "type": "string",
-          "example": "-60.5588"
-        },
-        "display_order": {
-          "type": "number",
-          "example": 1
+        "properties": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Identificador único de la provincia, generado automáticamente por el sistema."
+                }
+              }
+            },
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Buenos Aires"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Nombre corto o de uso común de la provincia."
+                }
+              }
+            },
+            "full_name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Provincia de Buenos Aires"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Nombre oficial completo de la provincia."
+                }
+              }
+            },
+            "latitude": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "-36.6769"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Latitud geográfica del centro de la provincia. Se almacena como texto para conservar el formato numérico exacto (incluye signo y decimales)."
+                }
+              }
+            },
+            "longitude": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "-60.5588"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Longitud geográfica del centro de la provincia. Se almacena como texto por el mismo motivo que la latitud."
+                }
+              }
+            },
+            "display_order": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Orden numérico utilizado para mostrar las provincias en listados (por ejemplo, de norte a sur). Es opcional."
+                }
+              }
+            }
+          }
         }
       }
     },
     "ProvinciaInput": {
       "type": "object",
       "properties": {
-        "name": {
+        "type": {
           "type": "string",
-          "example": "Buenos Aires"
+          "example": "object"
         },
-        "full_name": {
-          "type": "string",
-          "example": "Provincia de Buenos Aires"
-        },
-        "latitude": {
-          "type": "string",
-          "example": "-36.6769"
-        },
-        "longitude": {
-          "type": "string",
-          "example": "-60.5588"
-        },
-        "display_order": {
-          "type": "number",
-          "example": 1
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Buenos Aires"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Nombre corto o de uso común de la provincia."
+                }
+              }
+            },
+            "full_name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Provincia de Buenos Aires"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Nombre oficial completo de la provincia."
+                }
+              }
+            },
+            "latitude": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "-36.6769"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Latitud geográfica del centro de la provincia (numérica, en formato texto)."
+                }
+              }
+            },
+            "longitude": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "-60.5588"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Longitud geográfica del centro de la provincia (numérica, en formato texto)."
+                }
+              }
+            },
+            "display_order": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Orden numérico opcional utilizado para mostrar las provincias en listados."
+                }
+              }
+            }
+          }
         }
       }
     }
