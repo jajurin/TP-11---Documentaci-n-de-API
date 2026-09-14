@@ -91,21 +91,21 @@ Documentación interactiva disponible en:
 
 ## 9. Evidencia
 
-![alt text](image.png)
+![alt text](assets\image.png)
 GET /api/province/:
-![alt text](image-1.png)
+![alt text](assets\image-1.png)
 POST /api/province/:
-![alt text](image-2.png)
+![alt text](assets\image-2.png)
 PUT /api/province/:
-![alt text](image-3.png)
+![alt text](assets\image-3.png)
 GET /api/province/search?name=:
-![alt text](image-4.png)
+![alt text](assets\image-4.png)
 GET /api/province/order?sort=asc\|desc:
-![alt text](image-5.png)
+![alt text](assets\image-5.png)
 GET /api/province/:id:
-![alt text](image-6.png)
+![alt text](assets\image-6.png)
 DELETE /api/province/:id:
-![alt text](image-7.png)
+![alt text](assets\image-7.png)
 
 
 
