@@ -4,7 +4,6 @@ import ProvinceService from '../services/province-service.js';
 const router = Router();
 const svc = new ProvinceService();
 
-// GET /api/province
 router.get('/', async (req, res) => {
     /*
         #swagger.tags = ['Provincias']
@@ -21,7 +20,7 @@ router.get('/', async (req, res) => {
 
         #swagger.responses[500] = {
             description: 'Error interno del servidor',
-            schema: { example: 'Error interno del servidor.' }
+            schema: { type: 'string', example: 'Error interno del servidor.' }
         }
     */
     try {
@@ -33,7 +32,6 @@ router.get('/', async (req, res) => {
 });
 
 
-// GET /api/province/search?name=...
 router.get('/search', async (req, res) => {
     /*
         #swagger.tags = ['Provincias']
@@ -57,17 +55,17 @@ router.get('/search', async (req, res) => {
 
         #swagger.responses[400] = {
             description: 'Falta el parámetro name',
-            schema: { example: 'El parámetro "name" es requerido.' }
+            schema: { type: 'string', example: 'El parámetro "name" es requerido.' }
         }
 
         #swagger.responses[404] = {
             description: 'No se encontraron provincias que coincidan con el nombre buscado',
-            schema: { example: 'No se encontraron provincias con ese nombre.' }
+            schema: { type: 'string', example: 'No se encontraron provincias con ese nombre.' }
         }
 
         #swagger.responses[500] = {
             description: 'Error interno del servidor',
-            schema: { example: 'Error interno del servidor.' }
+            schema: { type: 'string', example: 'Error interno del servidor.' }
         }
     */
     try {
@@ -90,7 +88,6 @@ router.get('/search', async (req, res) => {
 });
 
 
-// GET /api/province/order?sort=asc|desc
 router.get('/order', async (req, res) => {
     /*
         #swagger.tags = ['Provincias']
@@ -114,12 +111,12 @@ router.get('/order', async (req, res) => {
 
         #swagger.responses[400] = {
             description: 'El parámetro sort tiene un valor inválido (solo se acepta "asc" o "desc")',
-            schema: { example: 'El parámetro "sort" debe ser "asc" o "desc".' }
+            schema: { type: 'string', example: 'El parámetro "sort" debe ser "asc" o "desc".' }
         }
 
         #swagger.responses[500] = {
             description: 'Error interno del servidor',
-            schema: { example: 'Error interno del servidor.' }
+            schema: { type: 'string', example: 'Error interno del servidor.' }
         }
     */
     try {
@@ -137,7 +134,6 @@ router.get('/order', async (req, res) => {
 });
 
 
-// GET /api/province/:id
 router.get('/:id', async (req, res) => {
     /*
         #swagger.tags = ['Provincias']
@@ -158,17 +154,17 @@ router.get('/:id', async (req, res) => {
 
         #swagger.responses[400] = {
             description: 'El ID enviado no es un número válido',
-            schema: { example: 'El ID debe ser un número.' }
+            schema: { type: 'string', example: 'El ID debe ser un número.' }
         }
 
         #swagger.responses[404] = {
             description: 'Provincia no encontrada',
-            schema: { example: 'Provincia no encontrada.' }
+            schema: { type: 'string', example: 'Provincia no encontrada.' }
         }
 
         #swagger.responses[500] = {
             description: 'Error interno del servidor',
-            schema: { example: 'Error interno del servidor.' }
+            schema: { type: 'string', example: 'Error interno del servidor.' }
         }
     */
     try {
@@ -189,7 +185,6 @@ router.get('/:id', async (req, res) => {
 });
 
 
-// POST /api/province
 router.post('/', async (req, res) => {
     /*
         #swagger.tags = ['Provincias']
@@ -210,12 +205,12 @@ router.post('/', async (req, res) => {
 
         #swagger.responses[400] = {
             description: 'Datos inválidos. Puede deberse a: nombre obligatorio o con menos de 3 caracteres, nombre completo obligatorio o con menos de 5 caracteres, latitud/longitud obligatorias y numéricas, o display_order que no sea un número entero.',
-            schema: { example: 'El nombre es obligatorio!!!' }
+            schema: { type: 'string', example: 'El nombre es obligatorio!!!' }
         }
 
         #swagger.responses[500] = {
             description: 'Error interno del servidor',
-            schema: { example: 'Error interno del servidor.' }
+            schema: { type: 'string', example: 'Error interno del servidor.' }
         }
     */
     try {
@@ -230,7 +225,6 @@ router.post('/', async (req, res) => {
 });
 
 
-// PUT /api/province
 router.put('/', async (req, res) => {
     /*
         #swagger.tags = ['Provincias']
@@ -251,17 +245,17 @@ router.put('/', async (req, res) => {
 
         #swagger.responses[400] = {
             description: 'Datos inválidos. Puede deberse a: ID faltante, nombre obligatorio o con menos de 3 caracteres, nombre completo obligatorio o con menos de 5 caracteres, latitud/longitud obligatorias y numéricas, o display_order que no sea un número entero.',
-            schema: { example: 'La latitud debe ser un número' }
+            schema: { type: 'string', example: 'La latitud debe ser un número' }
         }
 
         #swagger.responses[404] = {
             description: 'Provincia no encontrada',
-            schema: { example: 'Provincia no encontrada.' }
+            schema: { type: 'string', example: 'Provincia no encontrada.' }
         }
 
         #swagger.responses[500] = {
             description: 'Error interno del servidor',
-            schema: { example: 'Error interno del servidor.' }
+            schema: { type: 'string', example: 'Error interno del servidor.' }
         }
     */
     try {
@@ -285,7 +279,6 @@ router.put('/', async (req, res) => {
 });
 
 
-// DELETE /api/province/:id
 router.delete('/:id', async (req, res) => {
     /*
         #swagger.tags = ['Provincias']
@@ -306,17 +299,17 @@ router.delete('/:id', async (req, res) => {
 
         #swagger.responses[400] = {
             description: 'El ID enviado no es un número válido',
-            schema: { example: 'El ID debe ser un número.' }
+            schema: { type: 'string', example: 'El ID debe ser un número.' }
         }
 
         #swagger.responses[404] = {
             description: 'Provincia no encontrada',
-            schema: { example: 'Provincia no encontrada.' }
+            schema: { type: 'string', example: 'Provincia no encontrada.' }
         }
 
         #swagger.responses[500] = {
             description: 'Error interno del servidor',
-            schema: { example: 'Error interno del servidor.' }
+            schema: { type: 'string', example: 'Error interno del servidor.' }
         }
     */
     try {
