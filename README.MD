@@ -91,21 +91,35 @@ Documentación interactiva disponible en:
 
 ## 9. Evidencia
 
-![alt text](assets\image.png)
-GET /api/province/:
-![alt text](assets\image-1.png)
-POST /api/province/:
-![alt text](assets\image-2.png)
-PUT /api/province/:
-![alt text](assets\image-3.png)
-GET /api/province/search?name=:
-![alt text](assets\image-4.png)
-GET /api/province/order?sort=asc\|desc:
-![alt text](assets\image-5.png)
-GET /api/province/:id:
-![alt text](assets\image-6.png)
-DELETE /api/province/:id:
-![alt text](assets\image-7.png)
+## 9. Evidencia
+
+### GET /api/province/
+
+![GET /api/province](assets/image.png)
+
+### POST /api/province/
+
+![POST /api/province](assets/image-1.png)
+
+### PUT /api/province/
+
+![PUT /api/province](assets/image-2.png)
+
+### GET /api/province/search?name=
+
+![GET /api/province/search](assets/image-3.png)
+
+### GET /api/province/order?sort=asc|desc
+
+![GET /api/province/order](assets/image-4.png)
+
+### GET /api/province/:id
+
+![GET /api/province/:id](assets/image-5.png)
+
+### DELETE /api/province/:id
+
+![DELETE /api/province/:id](assets/image-6.png)
 
 
 
