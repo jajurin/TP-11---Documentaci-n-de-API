@@ -15,7 +15,7 @@ Es una **API propia**, desarrollada íntegramente por el grupo, con arquitectura
 ## 2. Por qué esta API
 
 - Tiene 7 endpoints (supera el mínimo de 6 pedido).
-- CRUD completo (GET, POST, PUT, DELETE) + 2 endpoints de consulta extra (búsqueda por nombre, orden por `display_order`).
+- CRUD completo (GET, POST, PUT, PATCH, DELETE), incluyendo una actualización parcial (PATCH) además de la completa (PUT), más un endpoint de consulta extra (orden por `display_order`).
 - Validaciones de negocio bien definidas que disparan distintos códigos de error (400, 404, 500), ideal para documentar respuestas.
 - Persistencia real en base de datos (Postgres / Supabase), en vez de datos en memoria.
 
@@ -24,11 +24,11 @@ Es una **API propia**, desarrollada íntegramente por el grupo, con arquitectura
 | Método | Endpoint                         | Descripción                                                                 |
 |--------|-----------------------------------|------------------------------------------------------------------------------|
 | GET    | `/api/province/`                  | Obtiene el listado completo de provincias.                                  |
-| GET    | `/api/province/search?name=`      | Busca provincias cuyo nombre contenga el texto recibido (búsqueda parcial). |
 | GET    | `/api/province/order?sort=asc\|desc` | Devuelve todas las provincias ordenadas por `display_order` (asc por defecto). |
 | GET    | `/api/province/:id`               | Obtiene una provincia puntual por ID.                                       |
 | POST   | `/api/province/`                  | Crea una nueva provincia (ID autogenerado, valida campos obligatorios).     |
 | PUT    | `/api/province/`                  | Actualiza una provincia existente (el `id` del body debe existir).          |
+| PATCH  | `/api/province/:id`               | Actualiza únicamente el `name` de una provincia existente.                  |
 | DELETE | `/api/province/:id`               | Elimina una provincia por ID.                                               |
 
 ## 4. Modelo `Provincia`
@@ -112,7 +112,7 @@ export default DBConfig;
 
 ### `src/repositories/repository-province.js`
 
-Se reemplazó el acceso al array en memoria por queries SQL parametrizadas contra `provinces`, manteniendo la misma firma de métodos que antes (`getAllAsync`, `getByIdAsync`, `searchByNameAsync`, `getAllOrderedAsync`, `createAsync`, `updateAsync`, `deleteByIdAsync`), por lo que **el service y el controller no necesitaron cambios de interfaz**.
+Se reemplazó el acceso al array en memoria por queries SQL parametrizadas contra `provinces`, manteniendo la misma firma de métodos que antes (`getAllAsync`, `getByIdAsync`, `getAllOrderedAsync`, `createAsync`, `updateAsync`, `updateNameAsync`, `deleteByIdAsync`), por lo que **el service y el controller no necesitaron cambios de interfaz** para los métodos preexistentes. El único método nuevo, `updateNameAsync`, se agregó siguiendo el mismo patrón que el resto (query parametrizada, propio `Client`, `RETURNING *`).
 
 Cada método abre su propio `Client`, ejecuta la query y cierra la conexión en el `finally`, atrapando errores de conexión con `logHelper.logError(error)`.
 
@@ -130,20 +130,20 @@ Documentación interactiva disponible en:
 ## 7. Cómo está implementado Swagger
 
 - `swagger-autogen` genera la especificación (`swagger_output.json`) a partir de comentarios `#swagger.*` puestos en cada ruta de `src/controllers/province-controller.js`.
-- `swagger.js` define la config base del doc (título, descripción, versión, host, schemes) y los modelos reutilizables `Provincia` / `ProvinciaInput` en `@definitions`, referenciados con `$ref` en cada endpoint.
+- `swagger.js` define la config base del doc (título, descripción, versión, host, schemes) y los modelos reutilizables `Provincia` / `ProvinciaInput` / `ProvinciaNombreInput` en `@definitions`, referenciados con `$ref` en cada endpoint. `ProvinciaNombreInput` es el modelo del body que espera el PATCH: solo el campo `name`.
 - `index.js` importa el JSON generado y monta la UI con:
-  ```js
+```js
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
-  ```
+```
 
 ## 8. Códigos de respuesta
 
 | Código | Significado           | Cuándo se produce                                                                 |
 |--------|------------------------|-------------------------------------------------------------------------------------|
-| 200    | OK                     | Consulta resuelta correctamente (todos los GET).                                   |
+| 200    | OK                     | Consulta o actualización resuelta correctamente (GET, PUT, PATCH).                 |
 | 201    | Created                | Provincia creada correctamente (`POST /api/province/`).                            |
-| 400    | Bad Request            | ID no numérico, parámetro `name`/`sort` inválido o faltante, campos obligatorios inválidos. |
-| 404    | Not Found              | Provincia inexistente por ID, búsqueda sin resultados, update sobre ID inexistente. |
+| 400    | Bad Request            | ID no numérico, parámetro `sort` inválido, o campos obligatorios inválidos (incluyendo el `name` del PATCH). |
+| 404    | Not Found              | Provincia inexistente por ID, o update/patch/delete sobre un ID inexistente.        |
 | 500    | Internal Server Error  | Error inesperado, capturado por el try/catch de cada endpoint.                     |
 
 ## 9. Logging de errores
@@ -151,15 +151,16 @@ Documentación interactiva disponible en:
 Se centralizó el registro de errores en `src/helpers/log-helper.js` (ya existente), que escribe en archivo y/o consola según `LOG_TO_FILE_ENABLED` / `LOG_TO_CONSOLE_ENABLED` del `.env`.
 
 - **Repository:** cada método atrapa errores de conexión/consulta a la base y los loguea con `logHelper.logError(error)`. No los vuelve a lanzar; ante un fallo, devuelve `null` (o array vacío en los métodos que listan), para no tirar abajo el servidor ante un problema puntual de conexión.
-- **Service:** se agregó un `try/catch` en cada método (`getAllAsync`, `getByIdAsync`, `searchByNameAsync`, `getAllOrderedAsync`, `createAsync`, `updateAsync`, `deleteByIdAsync`) que loguea cualquier error con `logHelper.logError(error)` y luego lo vuelve a lanzar (`throw error`) para no alterar el comportamiento que ya manejaba el controller (distinguir `error.esValidacion` para devolver 400).
+- **Service:** se agregó un `try/catch` en cada método (`getAllAsync`, `getByIdAsync`, `getAllOrderedAsync`, `createAsync`, `updateAsync`, `updateNameAsync`, `deleteByIdAsync`) que loguea cualquier error con `logHelper.logError(error)` y luego lo vuelve a lanzar (`throw error`) para no alterar el comportamiento que ya manejaba el controller (distinguir `error.esValidacion` para devolver 400).
 
-Con esto, los errores de **validación** (`validarProvincia`, en `src/helpers/validaciones-helper.js`) quedan registrados en el log además de disparar el `400` esperado — algo que antes no sucedía, ya que el `service` no tenía manejo de errores propio y el error solo era atrapado por el `controller` sin loguearse.
+Con esto, los errores de **validación** (`validarProvincia`, en `src/helpers/validaciones-helper.js`) quedan registrados en el log además de disparar el `400` esperado — algo que antes no sucedía, ya que el `service` no tenía manejo de errores propio y el error solo era atrapado por el `controller` sin loguearse. `updateNameAsync` reutiliza la misma `validarProvincia` en vez de tener su propia lógica de validación: arma un objeto completo (los datos existentes de la provincia + el `name` nuevo) y lo valida como si fuera un update completo, así el PATCH queda consistente con las mismas reglas de negocio del resto del CRUD.
 
 ## 10. Pruebas realizadas desde Swagger UI
 
 - ✅ GET: listado completo y consulta por ID.
 - ✅ POST / PUT: creación y actualización enviando body en JSON.
-- ✅ Endpoint con parámetros: búsqueda por nombre y listado ordenado (query params).
+- ✅ PATCH: actualización parcial del nombre por ID.
+- ✅ Endpoint con query params: listado ordenado (`order?sort=`).
 - ✅ DELETE: eliminación por ID.
 
 ## 11. Evidencia
@@ -176,9 +177,9 @@ Con esto, los errores de **validación** (`validarProvincia`, en `src/helpers/va
 
 ![PUT /api/province](assets/image-2.png)
 
-### GET /api/province/search?name=
+### PATCH /api/province/:id
 
-![GET /api/province/search](assets/image-3.png)
+![PATCH /api/province/:id](assets/image-3.png)
 
 ### GET /api/province/order?sort=asc|desc
 
@@ -196,12 +197,12 @@ Con esto, los errores de **validación** (`validarProvincia`, en `src/helpers/va
 
 **Los modelos no se generaban como esquemas reutilizables.** Al principio definimos los modelos en `swagger.js` como una clave normal `definitions` dentro del objeto `doc`, y `swagger-autogen` los interpretaba como un simple ejemplo fijo (mostraba todo el JSON de ejemplo pero no generaba los campos editables del formulario en Swagger UI). Se solucionó cambiando la clave a `@definitions`, que es la que `swagger-autogen` reconoce específicamente para registrar esquemas reutilizables y referenciarlos con `$ref` en cada endpoint.
 
-**`swagger_output.json` no se generaba ni se actualizaba.** Al principio, `swagger.js` no estaba llamando correctamente a `swaggerAutogen` (faltaba la dependencia instalada / la importación estaba mal hecha), por lo que al ejecutar el script no se creaba el archivo `swagger_output.json`, y si ya existía uno viejo, tampoco se actualizaba con los nuevos comentarios `#swagger.*` agregados en el controlador. Se solucionó instalando bien la dependencia `swagger-autogen` y verificando que `swagger.js` llame correctamente a `swaggerAutogen(outputFile, endpointsFiles, doc)` antes de levantar el servidor.
+**`swagger_output.json` no se generaba ni se actualizaba.** Al principio, `swagger.js` no estaba llamando correctamente a `swaggerAutogen` (faltaba la dependencia instalada / la importación estaba mal hecha), por lo que al ejecutar el script no se creaba el archivo `swagger_output.json`, y si ya existía uno viejo, tampoco se actualizaba con los nuevos comentarios `#swagger.*` agregados en el controlador. Se solucionó instalando bien la dependencia `swagger-autogen` y verificando que `swagger.js` llame correctamente a `swaggerAutogen(outputFile, endpointsFiles, doc)` antes de levantar el servidor. Este mismo problema reapareció al agregar el endpoint PATCH: el JSON viejo no tenía ni el path ni la definición `ProvinciaNombreInput`, lo que hacía fallar la UI con un "Resolver error" al no poder resolver el `$ref`. Se solucionó agregando `ProvinciaNombreInput` a `@definitions` en `swagger.js` y regenerando el archivo con `node swagger.js`.
 
 **Error al correr `node index.js` directamente.** Como `index.js` importa el archivo generado con `import swaggerFile from "./swagger_output.json" with { type: "json" }`, si se intentaba levantar el servidor con `node index.js` (o `npm start`) antes de haber ejecutado `swagger.js` al menos una vez, `swagger_output.json` no existía todavía y el servidor tiraba un error de módulo no encontrado al arrancar. Se solucionó dejando en claro que el flujo correcto es siempre ejecutar primero `node swagger.js` (que genera el archivo y recién después levanta `index.js`), y no `node index.js` de forma aislada.
 
 **El servidor se quedaba colgado al conectar con Supabase.** Al usar el host de conexión directa (`db.<project-ref>.supabase.co`, puerto `5432`), el `client.connect()` nunca resolvía ni tiraba error — se quedaba esperando indefinidamente. La causa es que ese host solo resuelve por IPv6, y muchas redes (incluida la usada para probar el proyecto) no tienen salida IPv6, por lo que el intento de conexión queda colgado en vez de fallar. Se solucionó usando el **Transaction pooler** de Supabase (host `aws-0-<region>.pooler.supabase.com`, puerto `6543`, usuario `postgres.<project-ref>`), que sí resuelve por IPv4 y además es el modo recomendado para conexiones breves y aisladas como las que usa el repository.
 
-**El `PUT` devolvía 200 en vez de 404 al actualizar una provincia inexistente.** El repository devolvía `result.rows[0]` directamente. Cuando una query no encuentra ninguna fila, `result.rows` es un array vacío, y acceder a `result.rows[0]` en JavaScript da `undefined`, no `null`. Como el `service` y el `controller` comparan explícitamente contra `null` (`if (provincia === null)`), esa condición nunca se cumplía con `undefined`, y el flujo seguía de largo hasta responder `200` con el body vacío. Se solucionó cambiando `result.rows[0]` por `result.rows[0] || null` en `getByIdAsync`, `createAsync`, `updateAsync` y `deleteByIdAsync`, asegurando que "no encontrado" siempre se represente como `null` de forma consistente.
+**El `PUT` devolvía 200 en vez de 404 al actualizar una provincia inexistente.** El repository devolvía `result.rows[0]` directamente. Cuando una query no encuentra ninguna fila, `result.rows` es un array vacío, y acceder a `result.rows[0]` en JavaScript da `undefined`, no `null`. Como el `service` y el `controller` comparan explícitamente contra `null` (`if (provincia === null)`), esa condición nunca se cumplía con `undefined`, y el flujo seguía de largo hasta responder `200` con el body vacío. Se solucionó cambiando `result.rows[0]` por `result.rows[0] || null` en `getByIdAsync`, `createAsync`, `updateAsync`, `updateNameAsync` y `deleteByIdAsync`, asegurando que "no encontrado" siempre se represente como `null` de forma consistente.
 
 **Los errores de validación no quedaban registrados en el log.** El `service` no tenía manejo de errores propio: cuando `validarProvincia` lanzaba una excepción, esta viajaba directo hasta el `controller` sin pasar por `logHelper`. Se solucionó agregando un `try/catch` en cada método del `service`, que loguea el error con `logHelper.logError(error)` y lo vuelve a lanzar (`throw error`), preservando el comportamiento del `controller` (que sigue distinguiendo `error.esValidacion` para responder 400) pero ahora con trazabilidad completa en el log.
