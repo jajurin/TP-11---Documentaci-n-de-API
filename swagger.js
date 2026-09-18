@@ -3,7 +3,7 @@ import swaggerAutogen from 'swagger-autogen';
 const doc = {
     info: {
         title: 'API de Jajurin Y Laizerovich - Provincias',
-        description: 'API REST CRUD de provincias argentinas utilizando datos en memoria.',
+        description: 'API REST CRUD de provincias argentinas, con persistencia en PostgreSQL (Supabase).',
         version: '1.0.0'
     },
 

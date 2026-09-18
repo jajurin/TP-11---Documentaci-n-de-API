@@ -1,71 +1,125 @@
-import provinces from "../data/provinces.js";
+import DBConfig from './../configs/db-config.js';
+import pkg from 'pg';
+const { Client } = pkg;
+import logHelper from '../helpers/log-helper.js';
 
 export default class ProvinceRepository {
 
     getAllAsync = async () => {
-        return provinces;
-    };
+        let returnArray = null;
+        const client = new Client(DBConfig);
+        try {
+            await client.connect();
+            const sql    = `SELECT * FROM provinces`;
+            const result = await client.query(sql);
+            returnArray = result.rows;
+        } catch (error) {
+            logHelper.logError(error);
+        } finally {
+            await client.end();
+        }
+        return returnArray;
+    }
 
-    getByIdAsync = async (id) => {
-        return provinces.find(p => p.id === Number(id)) || null;
-    };
+    getByIdAsync = async (idR) => {
+        let returnResult = null;
+        const client = new Client(DBConfig);
+        try {
+            await client.connect();
+            const sql    = `SELECT * FROM provinces WHERE id = $1`;
+            const values = [idR];
+            const result = await client.query(sql, values);
+            returnResult = result.rows[0] || null;
+        } catch (error) {
+            logHelper.logError(error);
+        } finally {
+            await client.end();
+        }
+        return returnResult;
+    }
 
-    searchByNameAsync = async (name) => {
-        return provinces.filter(p =>
-            p.name.toLowerCase().includes(name.toLowerCase())
-        );
-    };
+    searchByNameAsync = async (nameR) => {
+        let returnArray = null;
+        const client = new Client(DBConfig);
+        try {
+            await client.connect();
+            const sql    = `SELECT * FROM provinces WHERE name ILIKE $1`;
+            const values = [`%${nameR}%`];
+            const result = await client.query(sql, values);
+            returnArray = result.rows;
+        } catch (error) {
+            logHelper.logError(error);
+        } finally {
+            await client.end();
+        }
+        return returnArray;
+    }
 
-    getAllOrderedAsync = async (sort = 'asc') => {
-        const copy = [...provinces];
-
-        copy.sort((a, b) =>
-            sort === 'desc'
-                ? b.display_order - a.display_order
-                : a.display_order - b.display_order
-        );
-
-        return copy;
-    };
+    getAllOrderedAsync = async (sortR = 'asc') => {
+        let returnArray = null;
+        const client = new Client(DBConfig);
+        try {
+            await client.connect();
+            const direction = sortR === 'desc' ? 'DESC' : 'ASC';
+            const sql    = `SELECT * FROM provinces ORDER BY display_order ${direction}`;
+            const result = await client.query(sql);
+            returnArray = result.rows;
+        } catch (error) {
+            logHelper.logError(error);
+        } finally {
+            await client.end();
+        }
+        return returnArray;
+    }
 
     createAsync = async (entity) => {
-        const newId = provinces.length > 0
-            ? Math.max(...provinces.map(p => p.id)) + 1
-            : 1;
-
-        const newProvince = {
-            id: newId,
-            ...entity
-        };
-
-        provinces.push(newProvince);
-
-        return newProvince;
-    };
+        let returnResult = null;
+        const client = new Client(DBConfig);
+        try {
+            await client.connect();
+            const sql    = `INSERT INTO provinces (name, full_name, latitude, longitude, display_order) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+            const values = [entity.name, entity.full_name, entity.latitude, entity.longitude, entity.display_order];
+            const result = await client.query(sql, values);
+            returnResult = result.rows[0] || null;
+        } catch (error) {
+            logHelper.logError(error);
+        } finally {
+            await client.end();
+        }
+        return returnResult;
+    }
 
     updateAsync = async (entity) => {
-        const index = provinces.findIndex(
-            p => p.id === Number(entity.id)
-        );
-
-        if (index === -1) {
-            return null;
+        let returnResult = null;
+        const client = new Client(DBConfig);
+        try {
+            await client.connect();
+            const sql    = `UPDATE provinces SET name = $1, full_name = $2, latitude = $3, longitude = $4, display_order = $5 WHERE id = $6 RETURNING *`;
+            const values = [entity.name, entity.full_name, entity.latitude, entity.longitude, entity.display_order, entity.id];
+            const result = await client.query(sql, values);
+            returnResult = result.rows[0] || null;
+        } catch (error) {
+            logHelper.logError(error);
+        } finally {
+            await client.end();
         }
+        return returnResult;
+    }
 
-        provinces[index] = entity;
-
-        return provinces[index];
-    };
-
-    deleteByIdAsync = async (id) => {
-        const index = provinces.findIndex(
-            p => p.id === Number(id)
-        );
-
-        if (index === -1) {
-            return null;
+    deleteByIdAsync = async (idR) => {
+        let returnResult = null;
+        const client = new Client(DBConfig);
+        try {
+            await client.connect();
+            const sql    = `DELETE FROM provinces WHERE id = $1 RETURNING *`;
+            const values = [idR];
+            const result = await client.query(sql, values);
+            returnResult = result.rows[0] || null;
+        } catch (error) {
+            logHelper.logError(error);
+        } finally {
+            await client.end();
         }
-
-        return provinces.splice(index, 1)[0];
-    };
+        return returnResult;
+    }
 }

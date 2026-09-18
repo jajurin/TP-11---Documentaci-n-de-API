@@ -1,3 +1,4 @@
 node_modules
 modules/logs/*.log
 .env
+repomix-output.xml

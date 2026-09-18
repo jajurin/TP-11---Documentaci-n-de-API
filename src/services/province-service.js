@@ -1,5 +1,6 @@
 import ProvinceRepository from '../repositories/repository-province.js';
 import { validarProvincia } from '../helpers/validaciones-helper.js';
+import logHelper from '../helpers/log-helper.js';
 
 export default class ProvinceService {
 
@@ -8,45 +9,80 @@ export default class ProvinceService {
     }
 
     getAllAsync = async () => {
-        return await this.repo.getAllAsync();
+        try {
+            return await this.repo.getAllAsync();
+        } catch (error) {
+            logHelper.logError(error);
+            throw error;
+        }
     };
 
     getByIdAsync = async (id) => {
-        return await this.repo.getByIdAsync(id);
+        try {
+            return await this.repo.getByIdAsync(id);
+        } catch (error) {
+            logHelper.logError(error);
+            throw error;
+        }
     };
 
     searchByNameAsync = async (name) => {
-        return await this.repo.searchByNameAsync(name);
+        try {
+            return await this.repo.searchByNameAsync(name);
+        } catch (error) {
+            logHelper.logError(error);
+            throw error;
+        }
     };
 
     getAllOrderedAsync = async (sort) => {
-        return await this.repo.getAllOrderedAsync(sort);
+        try {
+            return await this.repo.getAllOrderedAsync(sort);
+        } catch (error) {
+            logHelper.logError(error);
+            throw error;
+        }
     };
 
     createAsync = async (body) => {
-        validarProvincia(body);
-        return await this.repo.createAsync(body);
+        try {
+            validarProvincia(body);
+            return await this.repo.createAsync(body);
+        } catch (error) {
+            logHelper.logError(error);
+            throw error;
+        }
     };
 
     updateAsync = async (body) => {
-        const provinciaExistente = await this.repo.getByIdAsync(body.id);
+        try {
+            const provinciaExistente = await this.repo.getByIdAsync(body.id);
 
-        if (provinciaExistente === null) {
-            return null;
+            if (provinciaExistente === null) {
+                return null;
+            }
+
+            validarProvincia(body);
+
+            return await this.repo.updateAsync(body);
+        } catch (error) {
+            logHelper.logError(error);
+            throw error;
         }
-
-        validarProvincia(body);
-
-        return await this.repo.updateAsync(body);
     };
 
     deleteByIdAsync = async (id) => {
-        const provinciaExistente = await this.repo.getByIdAsync(id);
+        try {
+            const provinciaExistente = await this.repo.getByIdAsync(id);
 
-        if (provinciaExistente === null) {
-            return null;
+            if (provinciaExistente === null) {
+                return null;
+            }
+
+            return await this.repo.deleteByIdAsync(id);
+        } catch (error) {
+            logHelper.logError(error);
+            throw error;
         }
-
-        return await this.repo.deleteByIdAsync(id);
     };
 }
