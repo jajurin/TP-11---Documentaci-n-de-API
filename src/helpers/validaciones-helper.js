@@ -10,12 +10,20 @@ export function validarProvincia(province) {
         fail("El nombre es obligatorio!!!");
     }
 
+    if (typeof province.name !== "string") {
+        fail("El nombre debe ser un texto");
+    }
+
     if (province.name.trim().length < 3) {
         fail("El nombre debe tener al menos 3 caracteres");
     }
 
     if (!province.full_name) {
         fail("El nombre completo es obligatorio!!!");
+    }
+
+    if (typeof province.full_name !== "string") {
+        fail("El nombre completo debe ser un texto");
     }
 
     if (province.full_name.trim().length < 5) {

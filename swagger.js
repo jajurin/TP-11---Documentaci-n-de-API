@@ -41,6 +41,14 @@ const doc = {
                 longitude: "-64.18",
                 display_order: 5
             }
+        },
+
+        ProvinciaNombreInput: {
+            type: "object",
+            required: ["name"],
+            properties: {
+                name: { type: "string", description: "Nuevo nombre corto de la provincia (mínimo 3 caracteres).", example: "Santa Fe" }
+            }
         }
     }
 };

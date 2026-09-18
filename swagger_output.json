@@ -206,43 +206,40 @@
         }
       }
     },
-    "/api/province/search": {
-      "get": {
+    "/api/province/{id}": {
+      "patch": {
         "tags": [
           "Provincias"
         ],
-        "summary": "Busca provincias por nombre",
-        "description": "Filtra el listado de provincias devolviendo únicamente aquellas cuyo nombre contenga el texto recibido por query string (búsqueda parcial, sin distinguir mayúsculas/minúsculas).",
+        "summary": "Actualiza el nombre de una provincia",
+        "description": "Actualización parcial: modifica únicamente el campo name de una provincia existente, dejando el resto de los datos sin cambios. El ID se recibe por path y el nuevo nombre por body.",
         "parameters": [
           {
-            "name": "name",
-            "in": "query",
-            "description": "Texto a buscar dentro del nombre de la provincia",
+            "name": "id",
+            "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "ID numérico de la provincia"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Nuevo nombre de la provincia",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProvinciaNombreInput"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Provincias que coinciden con la búsqueda",
+            "description": "Nombre actualizado exitosamente",
             "schema": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "array"
-                },
-                "items": {
-                  "$ref": "#/definitions/Provincia"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
+              "$ref": "#/definitions/Provincia"
             }
           },
           "400": {
-            "description": "Falta el parámetro name",
+            "description": "El ID no es un número válido o el nombre es inválido (obligatorio, mínimo 3 caracteres)",
             "schema": {
               "type": "object",
               "properties": {
@@ -252,7 +249,7 @@
                 },
                 "example": {
                   "type": "string",
-                  "example": "El parámetro \"name\" es requerido."
+                  "example": "El nombre es obligatorio y debe tener al menos 3 caracteres."
                 }
               },
               "xml": {
@@ -261,7 +258,7 @@
             }
           },
           "404": {
-            "description": "No se encontraron provincias que coincidan con el nombre buscado",
+            "description": "Provincia no encontrada",
             "schema": {
               "type": "object",
               "properties": {
@@ -271,7 +268,7 @@
                 },
                 "example": {
                   "type": "string",
-                  "example": "No se encontraron provincias con ese nombre."
+                  "example": "Provincia no encontrada."
                 }
               },
               "xml": {
@@ -299,85 +296,7 @@
             }
           }
         }
-      }
-    },
-    "/api/province/order": {
-      "get": {
-        "tags": [
-          "Provincias"
-        ],
-        "summary": "Obtiene todas las provincias ordenadas por display_order",
-        "description": "Devuelve el listado completo de provincias ordenado según el campo display_order. Si no se especifica el parámetro sort, se ordena de forma ascendente por defecto. Los únicos valores válidos para sort son \"asc\" y \"desc\".",
-        "parameters": [
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "Dirección del ordenamiento (asc o desc). Por defecto asc.",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Provincias ordenadas",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "array"
-                },
-                "items": {
-                  "$ref": "#/definitions/Provincia"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "400": {
-            "description": "El parámetro sort tiene un valor inválido (solo se acepta \"asc\" o \"desc\")",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "example": {
-                  "type": "string",
-                  "example": "El parámetro \"sort\" debe ser \"asc\" o \"desc\"."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "500": {
-            "description": "Error interno del servidor",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                },
-                "example": {
-                  "type": "string",
-                  "example": "Error interno del servidor."
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/province/{id}": {
+      },
       "get": {
         "tags": [
           "Provincias"
@@ -540,6 +459,82 @@
           }
         }
       }
+    },
+    "/api/province/order": {
+      "get": {
+        "tags": [
+          "Provincias"
+        ],
+        "summary": "Obtiene todas las provincias ordenadas por display_order",
+        "description": "Devuelve el listado completo de provincias ordenado según el campo display_order. Si no se especifica el parámetro sort, se ordena de forma ascendente por defecto. Los únicos valores válidos para sort son \"asc\" y \"desc\".",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Dirección del ordenamiento (asc o desc). Por defecto asc.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Provincias ordenadas",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "$ref": "#/definitions/Provincia"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "El parámetro sort tiene un valor inválido (solo se acepta \"asc\" o \"desc\")",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "El parámetro \"sort\" debe ser \"asc\" o \"desc\"."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Error interno del servidor."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -614,6 +609,19 @@
         "latitude": "-31.4",
         "longitude": "-64.18",
         "display_order": 5
+      }
+    },
+    "ProvinciaNombreInput": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Nuevo nombre corto de la provincia (mínimo 3 caracteres).",
+          "example": "Santa Fe"
+        }
       }
     }
   }

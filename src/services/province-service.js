@@ -26,15 +26,24 @@ export default class ProvinceService {
         }
     };
 
-    searchByNameAsync = async (name) => {
+        updateNameAsync = async (id, name) => {
         try {
-            return await this.repo.searchByNameAsync(name);
+            const provinciaExistente = await this.repo.getByIdAsync(id);
+
+            if (provinciaExistente === null) {
+                return null;
+            }
+
+            const provinciaAValidar = { ...provinciaExistente, name: name };
+
+            validarProvincia(provinciaAValidar);
+
+            return await this.repo.updateNameAsync(id, provinciaAValidar.name.trim());
         } catch (error) {
             logHelper.logError(error);
             throw error;
         }
     };
-
     getAllOrderedAsync = async (sort) => {
         try {
             return await this.repo.getAllOrderedAsync(sort);

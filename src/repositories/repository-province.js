@@ -38,21 +38,21 @@ export default class ProvinceRepository {
         return returnResult;
     }
 
-    searchByNameAsync = async (nameR) => {
-        let returnArray = null;
+        updateNameAsync = async (idR, nameR) => {
+        let returnResult = null;
         const client = new Client(DBConfig);
         try {
             await client.connect();
-            const sql    = `SELECT * FROM provinces WHERE name ILIKE $1`;
-            const values = [`%${nameR}%`];
+            const sql    = `UPDATE provinces SET name = $1 WHERE id = $2 RETURNING *`;
+            const values = [nameR, idR];
             const result = await client.query(sql, values);
-            returnArray = result.rows;
+            returnResult = result.rows[0] || null;
         } catch (error) {
             logHelper.logError(error);
         } finally {
             await client.end();
         }
-        return returnArray;
+        return returnResult;
     }
 
     getAllOrderedAsync = async (sortR = 'asc') => {

@@ -32,35 +32,39 @@ router.get('/', async (req, res) => {
 });
 
 
-router.get('/search', async (req, res) => {
+router.patch('/:id', async (req, res) => {
     /*
         #swagger.tags = ['Provincias']
-        #swagger.summary = 'Busca provincias por nombre'
-        #swagger.description = 'Filtra el listado de provincias devolviendo únicamente aquellas cuyo nombre contenga el texto recibido por query string (búsqueda parcial, sin distinguir mayúsculas/minúsculas).'
+        #swagger.summary = 'Actualiza el nombre de una provincia'
+        #swagger.description = 'Actualización parcial: modifica únicamente el campo name de una provincia existente, dejando el resto de los datos sin cambios. El ID se recibe por path y el nuevo nombre por body.'
 
-        #swagger.parameters['name'] = {
-            in: 'query',
-            description: 'Texto a buscar dentro del nombre de la provincia',
+        #swagger.parameters['id'] = {
+            in: 'path',
+            description: 'ID numérico de la provincia',
             required: true,
-            type: 'string'
+            type: 'integer'
+        }
+
+        #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Nuevo nombre de la provincia',
+            required: true,
+            schema: { $ref: '#/definitions/ProvinciaNombreInput' }
         }
 
         #swagger.responses[200] = {
-            description: 'Provincias que coinciden con la búsqueda',
-            schema: {
-                type: 'array',
-                items: { $ref: '#/definitions/Provincia' }
-            }
+            description: 'Nombre actualizado exitosamente',
+            schema: { $ref: '#/definitions/Provincia' }
         }
 
         #swagger.responses[400] = {
-            description: 'Falta el parámetro name',
-            schema: { type: 'string', example: 'El parámetro "name" es requerido.' }
+            description: 'El ID no es un número válido o el nombre es inválido (obligatorio, mínimo 3 caracteres)',
+            schema: { type: 'string', example: 'El nombre es obligatorio y debe tener al menos 3 caracteres.' }
         }
 
         #swagger.responses[404] = {
-            description: 'No se encontraron provincias que coincidan con el nombre buscado',
-            schema: { type: 'string', example: 'No se encontraron provincias con ese nombre.' }
+            description: 'Provincia no encontrada',
+            schema: { type: 'string', example: 'Provincia no encontrada.' }
         }
 
         #swagger.responses[500] = {
@@ -69,20 +73,21 @@ router.get('/search', async (req, res) => {
         }
     */
     try {
-        const { name } = req.query;
-
-        if (!name) {
-            return res.status(400).send('El parámetro "name" es requerido.');
+        if (isNaN(Number(req.params.id))) {
+            return res.status(400).send('El ID debe ser un número.');
         }
 
-        const provinces = await svc.searchByNameAsync(name);
+        const province = await svc.updateNameAsync(req.params.id, req.body.name);
 
-        if (provinces.length === 0) {
-            return res.status(404).send('No se encontraron provincias con ese nombre.');
+        if (province === null) {
+            return res.status(404).send('Provincia no encontrada.');
         }
 
-        return res.status(200).json(provinces);
+        return res.status(200).json(province);
     } catch (error) {
+        if (error.esValidacion) {
+            return res.status(400).send(error.message);
+        }
         return res.status(500).send('Error interno del servidor.');
     }
 });
